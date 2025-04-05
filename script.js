@@ -94,48 +94,94 @@
 
 let dataList = [];
 
+const hoursPerWek = 24 * 7;
+
 const handleSubmit = (e) => {
   // const elm = document.getElementById("task");
 
   const newForm = new FormData(e);
 
   const task = newForm.get("task");
-  const hr = newForm.get("hr");
+  const hr = +newForm.get("hr");      // + it downcast and truns string into number
 
   const obj = {
     task,
     hr,
     id: randomIdGenerator(),
+    type: "entry",
   };
 
-  dataList.push(obj);
+  // Check if there enough hours left
+  const existingTtlHr = taskTotal()
 
+  if(existingTtlHr + hr > hoursPerWek){
+    return alert("Sorry time exceed to long!"); 
+  }
+
+  dataList.push(obj);
   displayEntryList();
 };
 
 const displayEntryList = () => {
   console.log(dataList);
-  console.log("first");
 
   let str = "";
-
   const entryElm = document.getElementById("entryList");
 
-  dataList.map((item, i) => {
+  const entryList = dataList.filter((item) => item.type === "entry");
+
+  entryList.map((item, i) => {
     str += `<tr>
     <th>${i + 1}</th>
     <td>${item.task}</td>
     <td>${item.hr}</td>
     <td class="text-end">
-        <button class="btn btn-danger" type="button" aria-label="Delete task"><i
+        <button onClick = "handleOnDelete('${
+          item.id
+        }')" class="btn btn-danger" type="button" aria-label="Delete task"><i
                 class="fa-solid fa-trash"></i></button>
-        <button class="btn btn-success" type="button" aria-label="Edit task"><i
+        <button onClick="switchTask('${
+          item.id
+        }', 'bad')" class="btn btn-success" type="button" aria-label="Edit task"><i
                 class="fa-solid fa-arrow-right"></i></button>
     </td>
   </tr>`;
   });
 
   entryElm.innerHTML = str;
+  taskTotal();
+};
+
+const displayBadList = () => {
+  console.log(dataList);
+
+  let str = "";
+  const badElm = document.getElementById("badList");
+
+  const badList = dataList.filter((item) => item.type === "bad");
+
+  badList.map((item, i) => {
+    str += `<tr>
+    <th>${i + 1}</th>
+    <td>${item.task}</td>
+    <td>${item.hr}</td>
+    <td class="text-end">
+        <button onClick="switchTask('${
+          item.id
+        }', 'entry')" class="btn btn-warning" type="button" aria-label="Edit task"><i
+                class="fa-solid fa-arrow-left"></i></button>
+        
+        <button onClick = "handleOnDelete('${
+          item.id
+        }')" class="btn btn-danger" type="button" aria-label="Delete task"><i
+                class="fa-solid fa-trash"></i></button>
+    </td>
+  </tr>`;
+  });
+
+  badElm.innerHTML = str;
+
+  document.getElementById("savedHrsElm").innerText = badList.reduce((acc, item) => acc+item.hr, 0);
 };
 
 const randomIdGenerator = (length = 6) => {
@@ -150,3 +196,32 @@ const randomIdGenerator = (length = 6) => {
 
   return id;
 };
+
+const handleOnDelete = (id) => {
+  if (window.confirm("Are you sure, you want delete?")) {
+    dataList = dataList.filter((item) => item.id != id);
+    displayEntryList();
+    displayBadList();
+  }
+};
+
+const switchTask = (id, type) => {
+  dataList = dataList.map((item) => {
+    if (item.id === id) {
+      item.type = type;
+    }
+
+    return item;
+  });
+  displayEntryList();
+  displayBadList();
+};
+
+const taskTotal = () => {
+  const ttlHr = dataList.reduce((acc, item) => {
+    return acc + item.hr;
+  }, 0);
+
+  document.getElementById("ttlHrs").innerText = ttlHr; 
+  return ttlHr;
+}

@@ -19,7 +19,7 @@
     <style>
         .wrapper {
             background: linear-gradient(rgba(255, 0, 0, 0.441), rgba(128, 0, 128, 0.529));
-            height: 100vh;
+            min-height: 100vh;
         }
 
         .table {
@@ -71,26 +71,14 @@
                     <hr />
                     <!-- Bad List table -->
                     <table class="table table-striped table-hover border">
-                        <tbody>
-                            <tr>
-                                <th>1</th>
-                                <td>Sleeping</td>
-                                <td>40hr</td>
-                                <td class="text-end">
-                                    <button class="btn btn-warning" type="button" aria-label="Edit task"><i
-                                            class="fa-solid fa-arrow-left"></i></button>
-                                    <button class="btn btn-danger" type="button" aria-label="Delete task"><i
-                                            class="fa-solid fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        </tbody>
+                        <tbody id="badList"></tbody>
                     </table>
 
-                    <div class="alert alert-success">You could have saved = 50hr</div>
+                    <div class="alert alert-success">You could have saved = <span id="savedHrsElm">0</span>hrs</div>
                 </div>
             </div>
 
-            <div class="alert alert-success">The total hours allocated = 44hrs</div>
+            <div class="alert alert-success">The total hours allocated = <span id="ttlHrs">0</span>hrs</div>
         </div>
     </div>
     <script src="script.js"></script>
